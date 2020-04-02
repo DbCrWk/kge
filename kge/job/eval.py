@@ -126,7 +126,6 @@ def hist_all(hists, s, p, o, s_ranks, o_ranks, job, **kwargs):
     for r in s_ranks:
         hist[r] += 1
 
-
 def hist_per_head_and_tail(hists, s, p, o, s_ranks, o_ranks, job, **kwargs):
     __initialize_hist(hists, "head", job)
     hist = hists["head"]
