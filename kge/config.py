@@ -300,7 +300,7 @@ class Config:
             new_options = yaml.load(file, Loader=yaml.SafeLoader)
         self.load_options(
             new_options,
-            create=create,
+            True,
             overwrite=overwrite,
             allow_deprecated=allow_deprecated,
         )
