@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "/Users/dev.dabke/work/research/kge/venv3.7/bin/python",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+}
