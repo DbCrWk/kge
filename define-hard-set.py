@@ -46,6 +46,6 @@ hard_set_mask = [hard_set_filter(ranks_across_models)
                  for ranks_across_models in validation_sets_by_triple]
 
 # Save to a file
-with open('hard-set.txt', 'w') as f:
+with open(dataset + '-hard-set.txt', 'w') as f:
     for mask in hard_set_mask:
         f.write("%d\n" % mask)
