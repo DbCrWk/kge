@@ -1,51 +1,57 @@
-# This module inspects a collection of validation sets and can produce a mask
-# for validation examples in a "hard" set
+"""This module can accept performance sets for various models and will produce a mask for a hard set.
+
+Returns:
+    Array<int> -- For each example in a split of the dataset, this array contains a 1 (True) or 0 (False) if that example is in the hard set.
+"""
 import os
 import numpy as np
 
-def read_validation_set(full_path):
-    # Get each line
-    f = open(full_path, 'r')
-    raw_lines = f.readlines()
-    f.close()
-
-    # Convert each line to an integer array of ranks
-    validation_set_ranks = [int(line) for line in raw_lines]
-
-    return validation_set_ranks
-
-# Setup for model names
-models = [
-   'complex',
-   'conve',
-   'distmult',
-   'rescal',
-   'transe',
-]
-dataset = 'fb15k-237'
-base_path = os.path.join('.', 'local', 'best')
+from Intermediate import write_num_array_to_file, read_file_to_num_array, get_eda_path
 
 # Parameters for defining the hard set
-min_rank = 10               # A model "captures" this validation example if its predicted rank is at least this high
-model_tolerance = 0         # The number of models a validation example can miss for it to not count as "hard"
+# A model "captures" this validation example if its predicted rank is at least this high
+min_rank = 10
+# The number of models a validation example can miss for it to not count as "hard"
+model_tolerance = 0
 
-def hard_set_filter(ranks_across_models):
-    number_of_models = len(ranks_across_models)
+def define_hard_set(dataset_name, split, models):
+    def hard_set_filter(ranks_across_models):
+        number_of_models = len(ranks_across_models)
 
-    capturing_models = [model_rank
-                                    < min_rank for model_rank in ranks_across_models]
-    number_of_capturing_models = sum(capturing_models)
-    return (number_of_capturing_models < number_of_models - model_tolerance)
+        capturing_models = [model_rank < min_rank for model_rank in ranks_across_models]
+        number_of_capturing_models = sum(capturing_models)
+        return (number_of_capturing_models < number_of_models - model_tolerance)
 
-paths = [os.path.join(base_path, model, dataset + '-' + model
-                      + '-valid-rank.txt') for model in models]
+    def get_full_path_for_model(model):
+        file_name = dataset_name + '-' + model + '-' + split + '-rank.txt'
+        return get_eda_path(file_name)
 
-validation_sets = [read_validation_set(path) for path in paths]
-validation_sets_by_triple = np.transpose(validation_sets)
-hard_set_mask = [hard_set_filter(ranks_across_models)
-                 for ranks_across_models in validation_sets_by_triple]
+    paths = [get_full_path_for_model(model) for model in models]
+    performance_sets = [read_file_to_num_array(path) for path in paths]
+    performance_sets_by_triple = np.transpose(performance_sets)
+    hard_set_mask = [
+        1 if hard_set_filter(ranks_across_models) else 0
+        for ranks_across_models
+        in performance_sets_by_triple
+    ]
 
-# Save to a file
-with open(dataset + '-hard-set.txt', 'w') as f:
-    for mask in hard_set_mask:
-        f.write("%d\n" % mask)
+    # Save to a file
+    filename = dataset_name + '-' + split + '-hard-set.txt'
+    full_path = get_eda_path(filename)
+    write_num_array_to_file(full_path, hard_set_mask)
+
+    return hard_set_mask
+
+if __name__ == "__main__":
+    dataset_name = 'fb15k-237'
+    split = 'valid'
+    models = [
+        'complex',
+        'conve',
+        'distmult',
+        'rescal',
+        'transe',
+    ]
+
+    define_hard_set(dataset_name, split, models)
+    
