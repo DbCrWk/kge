@@ -6,11 +6,11 @@ Ideas
 
 Experiments
  - graph properties per relation (train, train + valid, train + valid + test):
-   - rank
+   + rank
    - number of subjects
    - number of objects
    - number of examples
-   - largest singular value
+   + largest singular value
    - symmetry ratio
    - number of connected components
    - average shortest path length (if available)

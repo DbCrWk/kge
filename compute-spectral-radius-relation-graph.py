@@ -1,37 +1,41 @@
-"""This module computes the rank of the relation graph
+"""This module computes the spectral radius of the relation graph
 
 !Note: this module exploits the fact that for a matrix, eliminating rows and
-columns that are identically 0 does not change the rank of a matrix. Therefore,
-for each relation, the adjacency matrix of the graph is actually expressed as
-the submatrix that has rows and columns that correspond to entities that have
-edges for the particular relation.
+columns that are identically 0 does not change the spectral radius of a matrix.
+Therefore, for each relation, the adjacency matrix of the graph is actually
+expressed as the submatrix that has rows and columns that correspond to entities
+that have edges for the particular relation.
 
 Returns:
-    Array<int> -- Gives the rank for each relation graph
+    Array<int> -- Gives the spectral radius for each relation graph
 """
 import os
 import networkx as nx
 import numpy as np
+import scipy as sp
 import torch
 import kge.model
 
-from Intermediate import read_file_to_num_array, write_num_array_to_file, get_eda_path, get_model_file
+from Intermediate import read_file_to_num_array, write_float_array_to_file, get_eda_path, get_model_file
 
-def compute_rank_from_graph(G):
-    print('computing rank', len(G.edges))
-    if len(G.edges) == 0: return -1
+def compute_spectral_radius_from_graph(G):
+    print('computing spectral radius', len(G.edges))
+    if len(G.edges) == 0 or len(G.edges) == 1:
+        return -1
 
     adjacency_matrix_raw = nx.adjacency_matrix(G)
     adjacency_matrix = adjacency_matrix_raw.asfptype()
-    est_rank = np.linalg.matrix_rank(adjacency_matrix.todense())
+    _, s, _ = sp.sparse.linalg.svds(adjacency_matrix, 1)
 
-    return est_rank
+    return s[0]
+
 
 def create_graph_from_edge_set(edge_set):
     G = nx.DiGraph()
     G.add_edges_from(edge_set)
 
     return G
+
 
 def extract_split_edge_set(model, split):
     data = model.dataset.split(split)
@@ -47,13 +51,14 @@ def extract_split_edge_set(model, split):
 
     return edge_sets
 
-def compute_rank_of_relation_graph(dataset_name, splits):
+
+def compute_spectral_radius_of_relation_graph(dataset_name, splits):
     print('-'.join(splits))
     # To generate a dataset instance, it's easier to load an existing model against the data
     dummy_model_name = 'rescal'
     model_file = get_model_file(dataset_name, dummy_model_name)
     model = kge.model.KgeModel.load_from_checkpoint(model_file)
-    
+
     edge_sets_per_relation = [
         extract_split_edge_set(model, split)
         for split in splits
@@ -66,23 +71,23 @@ def compute_rank_of_relation_graph(dataset_name, splits):
         for (j, edge_set) in enumerate(edge_set_for_relation):
             edge_sets[j] += edge_set
 
-    ranks = [
-        compute_rank_from_graph(
+    spectral_radii = [
+        compute_spectral_radius_from_graph(
             create_graph_from_edge_set(edge_set)
         )
         for edge_set in edge_sets
     ]
 
     # Write to file
-    filename = dataset_name + '-' + '-'.join(splits) + '-rank-by-relation.txt'
+    filename = dataset_name + '-' + '-'.join(splits) + '-spectral-radius-by-relation.txt'
     full_path = get_eda_path(filename)
-    write_num_array_to_file(full_path, ranks)
+    write_float_array_to_file(full_path, spectral_radii)
 
-    return ranks
+    return spectral_radii
 
 
 if __name__ == "__main__":
-    compute_rank_of_relation_graph('fb15k-237', ['train'])
-    compute_rank_of_relation_graph('fb15k-237', ['train', 'test'])
-    compute_rank_of_relation_graph('fb15k-237', ['train', 'test', 'valid'])
-    compute_rank_of_relation_graph('fb15k-237', ['valid'])
+    compute_spectral_radius_of_relation_graph('fb15k-237', ['train'])
+    compute_spectral_radius_of_relation_graph('fb15k-237', ['train', 'test'])
+    compute_spectral_radius_of_relation_graph('fb15k-237', ['train', 'test', 'valid'])
+    compute_spectral_radius_of_relation_graph('fb15k-237', ['valid'])
