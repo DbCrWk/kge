@@ -88,6 +88,6 @@ def compute_spectral_radius_of_relation_graph(dataset_name, splits):
 
 if __name__ == "__main__":
     compute_spectral_radius_of_relation_graph('fb15k-237', ['train'])
-    compute_spectral_radius_of_relation_graph('fb15k-237', ['train', 'test'])
-    compute_spectral_radius_of_relation_graph('fb15k-237', ['train', 'test', 'valid'])
-    compute_spectral_radius_of_relation_graph('fb15k-237', ['valid'])
+    compute_spectral_radius_of_relation_graph('fb15k-237', ['train', 'valid'])
+    compute_spectral_radius_of_relation_graph('fb15k-237', ['train', 'valid', 'test'])
+    compute_spectral_radius_of_relation_graph('fb15k-237', ['test'])

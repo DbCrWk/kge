@@ -11,7 +11,7 @@ Experiments
    - number of objects
    - number of examples
    + largest singular value
-   - symmetry ratio
+   + symmetry ratio
    - number of connected components
    - average shortest path length (if available)
    - is_bipartite
