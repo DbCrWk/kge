@@ -1,56 +1,82 @@
-# This file construct graph representations for each relation
+"""This module tabulates graph rank per relation
 
+Returns:
+    Array<int> -- Gives the rank for each relation graph
+"""
 import os
-import numpy
-import scipy
 import networkx as nx
+import numpy as np
 import torch
 import kge.model
 
-# Change these variables to select the model and dataset
-dataset_name = 'fb15k-237'
-model_name = 'rescal'
-dataset_and_model = dataset_name + '-' + model_name
-dataset_and_model_file = dataset_and_model + '.pt'
+from Intermediate import read_file_to_num_array, write_num_array_to_file, get_eda_path, get_model_file
 
-# Location of all experiment files
-base_path = os.path.join('.', 'local', 'best')
-
-# Reconstruct model
-full_path = os.path.join(base_path, model_name, dataset_and_model_file)
-model = kge.model.KgeModel.load_from_checkpoint(full_path)
-
-split = model.dataset.split('train')
-s = split.select(1, 0)
-p = split.select(1, 1)
-o = split.select(1, 2)
-
-number_of_total_relations = model.dataset.num_relations()
-number_of_total_entities = model.dataset.num_entities()
-edge_sets = [
-    []
-    for i in range(number_of_total_relations)
-]
-entity_set = range(number_of_total_entities)
-
-for (i, rel) in enumerate(p):
-    edge_sets[rel.item()].append((s[i].item(), o[i].item()))
-
-graph_sets = []
-ranks = []
-for (j, edge_set) in enumerate(edge_sets):
-    print('[computing] : ' + str(j))
-    G = nx.DiGraph()
-    # G.add_nodes_from(entity_set)
-    G.add_edges_from(edge_set)
-    graph_sets.append(G)
+def compute_rank_from_graph(G):
+    print('computing rank', len(G.edges))
+    if len(G.edges) == 0: return -1
 
     adjacency_matrix_raw = nx.adjacency_matrix(G)
     adjacency_matrix = adjacency_matrix_raw.asfptype()
-    est_rank = numpy.linalg.matrix_rank(adjacency_matrix.todense())
+    est_rank = np.linalg.matrix_rank(adjacency_matrix.todense())
 
-    ranks.append(est_rank)
+    return est_rank
 
-    with open(dataset_name + '-train-relation-ranks.txt', 'a') as f:
-        f.write("%d\n" % est_rank)
+def create_graph_from_edge_set(edge_set):
+    G = nx.DiGraph()
+    G.add_edges_from(edge_set)
 
+    return G
+
+def extract_split_edge_set(model, split):
+    data = model.dataset.split(split)
+    s = data.select(1, 0)
+    p = data.select(1, 1)
+    o = data.select(1, 2)
+
+    number_of_total_relations = model.dataset.num_relations()
+    edge_sets = [[] for i in range(number_of_total_relations)]
+
+    for (i, rel) in enumerate(p):
+        edge_sets[rel.item()].append((s[i].item(), o[i].item()))
+
+    return edge_sets
+
+def compute_rank_of_relation_graph(dataset_name, splits):
+    print('-'.join(splits))
+    # To generate a dataset instance, it's easier to load an existing model against the data
+    dummy_model_name = 'rescal'
+    model_file = get_model_file(dataset_name, dummy_model_name)
+    model = kge.model.KgeModel.load_from_checkpoint(model_file)
+    
+    edge_sets_per_relation = [
+        extract_split_edge_set(model, split)
+        for split in splits
+    ]
+
+    number_of_total_relations = model.dataset.num_relations()
+    edge_sets = [[] for i in range(number_of_total_relations)]
+
+    for edge_set_for_relation in edge_sets_per_relation:
+        for (j, edge_set) in enumerate(edge_set_for_relation):
+            edge_sets[j] += edge_set
+
+    ranks = [
+        compute_rank_from_graph(
+            create_graph_from_edge_set(edge_set)
+        )
+        for edge_set in edge_sets
+    ]
+
+    # Write to file
+    filename = dataset_name + '-' + '-'.join(splits) + '-rank-by-relation.txt'
+    full_path = get_eda_path(filename)
+    write_num_array_to_file(full_path, ranks)
+
+    return ranks
+
+
+if __name__ == "__main__":
+    compute_rank_of_relation_graph('fb15k-237', ['train'])
+    compute_rank_of_relation_graph('fb15k-237', ['train', 'test'])
+    compute_rank_of_relation_graph('fb15k-237', ['train', 'test', 'valid'])
+    compute_rank_of_relation_graph('fb15k-237', ['valid'])

@@ -14,6 +14,11 @@ def write_num_array_to_file(full_file_path, array):
         for i in array:
             f.write("%d\n" % i)
 
+def write_float_array_to_file(full_file_path, array):
+    with open(full_file_path, FILE_MODE_OVERWRITE) as f:
+        for i in array:
+            f.write("%8.8f\n" % i)
+
 def read_file_to_num_array(full_file_path):
     f = open(full_file_path, FILE_MODE_READ)
     raw_lines = f.readlines()
