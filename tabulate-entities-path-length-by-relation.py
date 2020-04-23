@@ -47,3 +47,4 @@ def tabulate_entities_path_length_by_relation(dataset_name, union_graph_splits, 
 
 if __name__ == "__main__":
     tabulate_entities_path_length_by_relation('fb15k-237', ['train', 'valid'], 'test')
+    tabulate_entities_path_length_by_relation('fb15k-237', ['train'], 'valid')

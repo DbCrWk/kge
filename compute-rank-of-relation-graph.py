@@ -85,4 +85,5 @@ if __name__ == "__main__":
     compute_rank_of_relation_graph('fb15k-237', ['train'])
     compute_rank_of_relation_graph('fb15k-237', ['train', 'valid'])
     compute_rank_of_relation_graph('fb15k-237', ['train', 'valid', 'test'])
+    compute_rank_of_relation_graph('fb15k-237', ['valid'])
     compute_rank_of_relation_graph('fb15k-237', ['test'])

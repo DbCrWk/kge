@@ -61,3 +61,4 @@ def compute_split_path_length_union_graph(dataset_name, union_graph_splits, path
 
 if __name__ == "__main__":
     compute_split_path_length_union_graph('fb15k-237', ['train', 'valid'], 'test')
+    compute_split_path_length_union_graph('fb15k-237', ['train'], 'valid')

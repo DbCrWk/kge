@@ -90,4 +90,5 @@ if __name__ == "__main__":
     compute_spectral_radius_of_relation_graph('fb15k-237', ['train'])
     compute_spectral_radius_of_relation_graph('fb15k-237', ['train', 'valid'])
     compute_spectral_radius_of_relation_graph('fb15k-237', ['train', 'valid', 'test'])
+    compute_spectral_radius_of_relation_graph('fb15k-237', ['valid'])
     compute_spectral_radius_of_relation_graph('fb15k-237', ['test'])

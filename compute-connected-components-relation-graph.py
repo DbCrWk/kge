@@ -90,4 +90,5 @@ if __name__ == "__main__":
     compute_num_connected_components_of_relation_graph('fb15k-237', ['train'])
     compute_num_connected_components_of_relation_graph('fb15k-237', ['train', 'valid'])
     compute_num_connected_components_of_relation_graph('fb15k-237', ['train', 'valid', 'test'])
+    compute_num_connected_components_of_relation_graph('fb15k-237', ['valid'])
     compute_num_connected_components_of_relation_graph('fb15k-237', ['test'])
