@@ -11,6 +11,7 @@ from kge.model.conve import ConvE
 from kge.model.distmult import DistMult
 from kge.model.relational_tucker3 import RelationalTucker3
 from kge.model.rescal import Rescal
+from kge.model.svd import Svd
 from kge.model.transe import TransE
 from kge.model.rotate import RotatE
 from kge.model.cp import CP

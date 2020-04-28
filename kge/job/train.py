@@ -2,6 +2,7 @@ import itertools
 import os
 import math
 import time
+import wandb
 from collections import defaultdict
 
 from dataclasses import dataclass
@@ -9,6 +10,7 @@ from dataclasses import dataclass
 import torch
 import torch.utils.data
 import numpy as np
+from torchsummary import summary
 
 from kge import Config, Dataset
 from kge.job import Job
@@ -63,6 +65,9 @@ class TrainingJob(Job):
         self.epoch: int = 0
         self.valid_trace: List[Dict[str, Any]] = []
         self.is_prepared = False
+
+        wandb.config.update(self.config.options)
+        wandb.watch(self.model, log="all")
         self.model.train()
 
         # attributes filled in by implementing classes
@@ -435,6 +440,20 @@ class TrainingJob(Job):
         other_time = (
             epoch_time - prepare_time - forward_time - backward_time - optimizer_time
         )
+
+        wandb.log({
+            "size": self.num_examples,
+            "lr": [group["lr"] for group in self.optimizer.param_groups],
+            "avg_loss": sum_loss / self.num_examples,
+            "avg_cost": sum_loss / self.num_examples + sum_penalty / len(self.loader),
+            "epoch_time": epoch_time,
+            "prepare_time": prepare_time,
+            "forward_time": forward_time,
+            "backward_time": backward_time,
+            "optimizer_time": optimizer_time,
+            "other_time": other_time
+        })
+
         trace_entry = dict(
             type=self.type_str,
             scope="epoch",

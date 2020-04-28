@@ -1,0 +1,11 @@
+import: [lookup_embedder]
+
+svd:
+  class_name: Svd
+  entity_embedder:
+    type: lookup_embedder
+    +++: +++
+  relation_embedder:
+    type: lookup_embedder
+    dim: -1  # determine automatically
+    +++: +++

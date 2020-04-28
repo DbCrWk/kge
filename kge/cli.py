@@ -5,6 +5,8 @@ import os
 import traceback
 import yaml
 
+import wandb
+
 from kge import Dataset
 from kge import Config
 from kge.job import Job
@@ -134,6 +136,8 @@ def create_parser(config, additional_args=[]):
 
 
 def main():
+    wandb.init(project="libkge-test")
+
     # default config
     config = Config()
 

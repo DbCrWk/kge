@@ -1,0 +1,5 @@
+[default]
+entity = ddabke
+project = libkge-test
+base_url = https://api.wandb.ai
+
