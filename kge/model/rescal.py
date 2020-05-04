@@ -1,6 +1,7 @@
 import math
 
 import torch
+import time
 
 from kge import Config, Dataset
 from kge.model.kge_model import KgeEmbedder, KgeModel, RelationalScorer
@@ -49,6 +50,10 @@ class RescalScorer(RelationalScorer):
             )
         else:
             super().score_emb(s_emb, p_emb, o_emb, combine)
+
+        end_time = time.perf_counter()
+        total_time = end_time - start_time
+        print('rescal batch total score time', total_time)
 
         return out.view(batch_size, -1)
 

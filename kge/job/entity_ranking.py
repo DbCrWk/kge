@@ -238,15 +238,6 @@ class EntityRankingJob(EvaluationJob):
                 ranks_and_ties_for_ranking["o_filt"][1],
             )
 
-            print('Dumping subject/object ranks')
-            with open(self.config.subjectfile(), 'a') as f:
-                for item in s_ranks:
-                    f.write("%s\n" % item.item())
-
-            with open(self.config.objectfile(), 'a') as f:
-                for item in o_ranks:
-                    f.write("%s\n" % item.item())
-
             # Update the histograms of of raw ranks and filtered ranks
             batch_hists = dict()
             batch_hists_filt = dict()

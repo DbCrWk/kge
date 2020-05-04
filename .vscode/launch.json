@@ -17,7 +17,7 @@
             "request": "launch",
             "program": "${workspaceRoot}/kge/cli.py",
             "console": "integratedTerminal",
-            "args": ["start", "./local/experiments/rescal.yaml"]
+            "args": ["start", "./local/experiments/svd.yaml"]
         }
     ]
 }

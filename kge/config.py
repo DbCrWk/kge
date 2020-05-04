@@ -520,20 +520,6 @@ class Config:
         else:
             return os.devnull
 
-    def subjectfile(self) -> str:
-        folder = self.log_folder if self.log_folder else self.folder
-        if folder:
-            return os.path.join(folder, "subject.txt")
-        else:
-            return os.devnull
-
-    def objectfile(self) -> str:
-        folder = self.log_folder if self.log_folder else self.folder
-        if folder:
-            return os.path.join(folder, "object.txt")
-        else:
-            return os.devnull
-
 class Configurable:
     """Mix-in class for adding configurations to objects.
 
