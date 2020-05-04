@@ -136,8 +136,6 @@ def create_parser(config, additional_args=[]):
 
 
 def main():
-    wandb.init(project="libkge-test")
-
     # default config
     config = Config()
 
@@ -276,9 +274,11 @@ def main():
             dataset = Dataset.load(config)
 
             # let's go
+            wandb.init(job_type=config.get("job.type"))
             job = Job.create(config, dataset)
             if args.command == "resume":
                 job.resume(checkpoint_file)
+
             job.run()
     except BaseException as e:
         tb = traceback.format_exc()

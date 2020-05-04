@@ -423,6 +423,33 @@ class Config:
             return True
         return False
 
+    def wandb_model_name(self, cpt_id: Union[str, int]) -> str:
+        "Return just the file name of a checkpoint file"
+        from kge.misc import is_number
+
+        if is_number(cpt_id, int):
+            return "model_{:05d}.pth".format(int(cpt_id))
+        else:
+            return "model_{}.pth".format(cpt_id)
+
+    def wandb_optimizer_name(self, cpt_id: Union[str, int]) -> str:
+        "Return just the file name of a checkpoint file"
+        from kge.misc import is_number
+
+        if is_number(cpt_id, int):
+            return "optimizer_{:05d}.pth".format(int(cpt_id))
+        else:
+            return "optimizer_{}.pth".format(cpt_id)
+
+    def wandb_lr_scheduler_name(self, cpt_id: Union[str, int]) -> str:
+        "Return just the file name of a checkpoint file"
+        from kge.misc import is_number
+
+        if is_number(cpt_id, int):
+            return "lr_scheduler_{:05d}.pth".format(int(cpt_id))
+        else:
+            return "lr_scheduler_{}.pth".format(cpt_id)
+
     def checkpoint_file(self, cpt_id: Union[str, int]) -> str:
         "Return path of checkpoint file for given checkpoint id"
         from kge.misc import is_number

@@ -1,6 +1,8 @@
 from kge import Config, Dataset
 import uuid
 
+import wandb
+
 from kge.misc import get_git_revision_short_hash
 import os
 import socket
@@ -42,7 +44,7 @@ class Job:
     def __init__(self, config: Config, dataset: Dataset, parent_job: "Job" = None):
         self.config = config
         self.dataset = dataset
-        self.job_id = str(uuid.uuid4())
+        self.job_id = str(uuid.uuid4()) if (not wandb.run) else wandb.run.id
         self.parent_job = parent_job
         self.resumed_from_job_id: Optional[str] = None
         self.trace_entry: Dict[str, Any] = {}

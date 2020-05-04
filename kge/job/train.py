@@ -10,7 +10,6 @@ from dataclasses import dataclass
 import torch
 import torch.utils.data
 import numpy as np
-from torchsummary import summary
 
 from kge import Config, Dataset
 from kge.job import Job
@@ -200,6 +199,24 @@ class TrainingJob(Job):
 
             # create checkpoint and delete old one, if necessary
             self.save(self.config.checkpoint_file(self.epoch))
+
+            # Push to WandB
+            wandb_model_name = self.config.wandb_model_name(self.epoch)
+            wandb_optimizer_name = self.config.wandb_optimizer_name(self.epoch)
+            wandb_lr_scheduler_name = self.config.wandb_lr_scheduler_name(self.epoch)
+
+            full_wandb_model_name = os.path.join(wandb.run.dir, wandb_model_name)
+            full_wandb_optimizer_name = os.path.join(wandb.run.dir, wandb_optimizer_name)
+            full_wandb_lr_scheduler_name = os.path.join(wandb.run.dir, wandb_lr_scheduler_name)
+
+            torch.save(self.model.state_dict(), full_wandb_model_name)
+            torch.save(self.optimizer.state_dict(), full_wandb_optimizer_name)
+            torch.save(self.kge_lr_scheduler.state_dict(), full_wandb_lr_scheduler_name)
+            
+            wandb.save(full_wandb_model_name)
+            wandb.save(full_wandb_optimizer_name)
+            wandb.save(full_wandb_lr_scheduler_name)
+
             if self.epoch > 1:
                 delete_checkpoint_epoch = -1
                 if checkpoint_every == 0:
@@ -250,6 +267,7 @@ class TrainingJob(Job):
             },
             filename,
         )
+        wandb.save(filename)
 
     def load(self, filename: str) -> str:
         """Load job state from specified file.
@@ -441,18 +459,21 @@ class TrainingJob(Job):
             epoch_time - prepare_time - forward_time - backward_time - optimizer_time
         )
 
-        wandb.log({
-            "size": self.num_examples,
-            "lr": [group["lr"] for group in self.optimizer.param_groups],
-            "avg_loss": sum_loss / self.num_examples,
-            "avg_cost": sum_loss / self.num_examples + sum_penalty / len(self.loader),
-            "epoch_time": epoch_time,
-            "prepare_time": prepare_time,
-            "forward_time": forward_time,
-            "backward_time": backward_time,
-            "optimizer_time": optimizer_time,
-            "other_time": other_time
-        })
+        wandb.log(
+            {
+                "size": self.num_examples,
+                "lr": [group["lr"] for group in self.optimizer.param_groups],
+                "avg_loss": sum_loss / self.num_examples,
+                "avg_cost": sum_loss / self.num_examples + sum_penalty / len(self.loader),
+                "epoch_time": epoch_time,
+                "prepare_time": prepare_time,
+                "forward_time": forward_time,
+                "backward_time": backward_time,
+                "optimizer_time": optimizer_time,
+                "other_time": other_time
+            },
+            step=self.epoch
+        )
 
         trace_entry = dict(
             type=self.type_str,

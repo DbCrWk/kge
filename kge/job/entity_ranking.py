@@ -1,6 +1,7 @@
 import math
 import time
 
+import wandb
 import torch
 import kge.job
 from kge.job import EvaluationJob, Job
@@ -389,6 +390,7 @@ class EntityRankingJob(EvaluationJob):
                     )
                 )
         epoch_time += time.time()
+        wandb.log(metrics, step=self.epoch)
 
         # compute trace
         trace_entry = dict(
