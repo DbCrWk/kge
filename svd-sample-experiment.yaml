@@ -48,14 +48,14 @@ dataset:
 model: 'svd'
 train:
   split: train
-  type: KvsAll
+  type: 1vsAll
   loss: kl
   loss_arg: .nan
   max_epochs: 20
-  batch_size: 32
+  batch_size: 256
   # Number of workers used to construct batches. Leave at 0 for default.
   num_workers: 0
-  optimizer: Adagrad           # sgd, adagrad, adam
+  optimizer: Adam           # sgd, adagrad, adam
   optimizer_args:
     +++: +++
   lr_scheduler: ""
@@ -101,10 +101,10 @@ eval:
   filter_with_test: True
   type: entity_ranking
   hits_at_k_s: [1, 3, 10, 50, 100, 200, 300, 400, 500, 1000]
-  batch_size: 32
+  batch_size: 512
   chunk_size: -1                  # default: no chunking
   metrics_per:
-    relation_type: False          # 1-to-1, 1-to-N, N-to-1, N-to-N
+    relation_type: True          # 1-to-1, 1-to-N, N-to-1, N-to-N
     head_and_tail: False          # head, tail
     argument_frequency: False     # 25%, 50%, 75%, top quantiles per argument
   trace_level: epoch            # example, batch, epoch
@@ -113,13 +113,13 @@ eval:
 
 valid:
   split: 'valid'
-  every: 3
+  every: 2
   metric: mean_reciprocal_rank_filtered_with_test
   metric_expr: 'float("nan")'
   early_stopping:
-    patience: 5
+    patience: 10
     min_threshold:
-      epochs: 0
-      metric_value: 0.0
+      epochs: 50
+      metric_value: 0.05
   trace_level: epoch
 
