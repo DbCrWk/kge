@@ -51,7 +51,7 @@ train:
   type: 1vsAll
   loss: kl
   loss_arg: .nan
-  max_epochs: 20
+  max_epochs: 100
   batch_size: 256
   # Number of workers used to construct batches. Leave at 0 for default.
   num_workers: 0
@@ -122,4 +122,3 @@ valid:
       epochs: 50
       metric_value: 0.05
   trace_level: epoch
-
