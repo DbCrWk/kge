@@ -267,7 +267,6 @@ class TrainingJob(Job):
             },
             filename,
         )
-        wandb.save(filename)
 
     def load(self, filename: str) -> str:
         """Load job state from specified file.
