@@ -1,6 +1,6 @@
 job:
   type: train
-  device: 'cpu'  
+  device: 'cuda:0'
 random_seed:
   python: -1
   torch: -1
@@ -45,13 +45,15 @@ dataset:
     +++: +++
   pickle: True
   +++: +++
+
 model: 'svd'
+
 train:
   split: train
   type: 1vsAll
   loss: kl
   loss_arg: .nan
-  max_epochs: 100
+  max_epochs: 400
   batch_size: 256
   # Number of workers used to construct batches. Leave at 0 for default.
   num_workers: 0
@@ -69,12 +71,14 @@ train:
   abort_on_nan: True
   visualize_graph: False
   pin_memory: False
+
 KvsAll:
   label_smoothing: 0.0
   query_types:
     sp_: True
     s_o: False
     _po: True
+
 negative_sampling:
   sampling_type: uniform
   frequency:
@@ -87,7 +91,6 @@ negative_sampling:
     s: False       # filter and resample for slot s
     p: False       # as above
     o: False       # as above
-
     split: ''      # split containing the positives; default is train.split
     implementation: fast_if_available
   shared: False
