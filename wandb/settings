@@ -1,5 +1,5 @@
 [default]
 entity = ddabke
-project = libkge-test
+project = nlp-kge-svd
 base_url = https://api.wandb.ai
 
