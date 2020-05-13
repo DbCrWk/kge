@@ -1,0 +1,11 @@
+import: [graph_embedder, lookup_embedder]
+
+svd_graph:
+  class_name: SvdGraph
+  entity_embedder:
+    type: graph_embedder
+    +++: +++
+  relation_embedder:
+    type: lookup_embedder
+    dim: -1  # determine automatically
+    +++: +++
