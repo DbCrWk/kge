@@ -34,7 +34,8 @@ class GraphEmbedder(KgeEmbedder):
         self.graph = nx.Graph()
         self.graph.add_nodes_from(range(dataset.num_entities()))
         self.graph.add_edges_from(graph_edge_set)
-        self.graph_adj_mat = torch.tensor(nx.adjacency_matrix(self.graph).todense(), dtype=torch.float32, requires_grad=False)
+        self.graph_adj_mat = torch.tensor(nx.adjacency_matrix(
+            self.graph).todense(), dtype=torch.float32, requires_grad=False).to(self.device)
 
         round_embedder_dim_to = self.get_option("round_dim_to")
         if len(round_embedder_dim_to) > 0:
