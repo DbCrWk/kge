@@ -95,7 +95,8 @@ class GraphEmbedder(KgeEmbedder):
         return embeddings
 
     def embed(self, indexes: Tensor) -> Tensor:
-        embed_part = self.embed_all()[indexes,:]
+        embed_all = self.embed_all()
+        embed_part = embed_all[indexes,:]
         return embed_part
 
     def embed_all(self) -> Tensor:
