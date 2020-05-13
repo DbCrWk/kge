@@ -1,5 +1,5 @@
 [default]
-entity = ddabke
+entity = princeton-nlp-kge
 project = nlp-kge-svd
 base_url = https://api.wandb.ai
 
