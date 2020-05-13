@@ -25,6 +25,7 @@ class GraphEmbedder(KgeEmbedder):
         self.sparse = self.get_option("sparse")
         self.config.check("train.trace_level", ["batch", "epoch"])
         self.vocab_size = vocab_size
+        self.device: str = self.config.get("job.device")
 
         graph_edge_set = []
         graph_s = dataset.split('train').select(1, 0)
